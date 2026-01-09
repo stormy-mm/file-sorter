@@ -12,7 +12,7 @@ FOLDERS = (adding_path("old_photos", "family.png"),
            adding_path("new_photos", "hidden_photos", "python313.jpg"))
 
 
-class TestFileSorter(unittest.TestCase):
+class TestMtFileSorter(unittest.TestCase):
     """Тест реализации ядра программы"""
 
     def setUp(self):

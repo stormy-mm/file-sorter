@@ -25,7 +25,10 @@ class FileSorter:
 
     def get_folder_user(self, folder_name: str) -> list:
         """Возвращает директорию пользователя"""
-        return os.listdir(folder_name)
+        if os.path.exists(folder_name):
+            return os.listdir(folder_name)
+        else:
+            raise FileNotFoundError
 
     def create_folder_in_user(self, folder_name: str) -> bool:
         """Создание папки в директории пользователя"""
@@ -63,3 +66,15 @@ class FileSorter:
                 pass
 
         return True
+
+
+def run(path: str) -> bool:
+    """Запуск программы"""
+    FILE_SORT = FileSorter()
+    try:
+        FILE_SORT.get_folder_user(path)
+    except FileNotFoundError:
+        return False
+    FILE_SORT.create_folder_in_user(path)
+    FILE_SORT.sort_files(path)
+    return FILE_SORT.checker_files_in_folder_user(path)

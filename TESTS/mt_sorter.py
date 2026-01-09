@@ -65,4 +65,4 @@ class TestMtFileSorter(unittest.TestCase):
         fs = FileSorter()
         fs.create_folder_in_user(PATH)
         fs.sort_files(PATH)
-        self.assertTrue(fs.checker_files_in_folder_user(PATH))
+        self.assertTrue(fs.is_root_folder_clean(PATH))

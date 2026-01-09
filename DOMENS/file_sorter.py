@@ -5,6 +5,7 @@ def adding_path(*args: tuple) -> str:
     """Возвращает склеенный путь"""
     return os.path.join(*args)
 
+
 class FileSorter:
     """Класс для управления сортировщиком файлов"""
 
@@ -36,7 +37,7 @@ class FileSorter:
             os.makedirs(adding_path(folder_name, folder), exist_ok=True)
         return True
 
-    def checker_files_in_folder_user(self, folder_name: str) -> bool:
+    def is_root_folder_clean(self, folder_name: str) -> bool:
         """Проверяет отсутствие файлов в директории"""
         for file in self.get_folder_user(folder_name):
             if os.path.isfile(adding_path(folder_name, file)):
@@ -44,12 +45,15 @@ class FileSorter:
         return True
 
     def _get_target_folder(self, extension: str) -> str:
+        """Возвращает название папки"""
         for folder, extensions in self.get_extension().items():
             if extension in extensions:
                 return folder
         return "Other"
 
-    def sort_files(self, folder_user: str) -> bool:
+    def sort_files(self, folder_user: str) -> dict:
+        """Сортирует файлы"""
+        logs = {}
         for file in self.get_folder_user(folder_user):
             src = adding_path(folder_user, file)
 
@@ -62,19 +66,20 @@ class FileSorter:
 
             try:
                 os.rename(src, dst)
+                logs[file] = os.path.split(dst)[0]
             except FileExistsError:
                 pass
 
-        return True
+        return logs
 
+    def remove_empty_folders(self, folder_user: str) -> None:
+        """Удаляет пустые папки в директории пользователя"""
+        for root, dirs, files in os.walk(folder_user, topdown=False):
+            for dir_name in dirs:
+                full_path = os.path.join(root, dir_name)
 
-def run(path: str) -> bool:
-    """Запуск программы"""
-    FILE_SORT = FileSorter()
-    try:
-        FILE_SORT.get_folder_user(path)
-    except FileNotFoundError:
-        return False
-    FILE_SORT.create_folder_in_user(path)
-    FILE_SORT.sort_files(path)
-    return FILE_SORT.checker_files_in_folder_user(path)
+                try:
+                    if not os.listdir(full_path):
+                        os.rmdir(full_path)
+                except FileNotFoundError:
+                    pass

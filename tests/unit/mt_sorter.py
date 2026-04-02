@@ -1,7 +1,7 @@
 import shutil
 import unittest
 import os
-from DOMENS.file_sorter import FileSorter, adding_path
+from src.my_app.core.file_sorter import FileSorter, adding_path
 
 
 BASE_DIR = os.path.dirname(__file__)

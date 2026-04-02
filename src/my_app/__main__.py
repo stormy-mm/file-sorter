@@ -1,5 +1,5 @@
 import sys
-from DOMENS.cli_file_sorter import handler
+from src.my_app.cli.cli_file_sorter import handler
 
 def main():
     """Главная функция"""

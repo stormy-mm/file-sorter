@@ -1,7 +1,7 @@
 import os
 
 
-def adding_path(*args: tuple) -> str:
+def adding_path(*args) -> str | bytes:
     """Возвращает склеенный путь"""
     return os.path.join(*args)
 
@@ -12,20 +12,21 @@ class FileSorter:
     def __init__(self):
         """Инициализация словаря с названиями директорий и расширениями"""
         self._DICT_WITH_EXTENSION = {
-            "Images": [".jpg", ".jpeg", ".png", ".svg"],
-            "Documents": [".doc", ".docx", ".txt", ".pdf", ".xlsx", ".pptx"],
-            "Archives": [".zip", ".gz", ".tar"],
-            "Audio": [".mp3", ".ogg", ".wav", ".amr"],
-            "Video": [".avi", ".mp4", ".mov", ".mkv"],
-            "Other": []
+            "Images": (".jpg", ".jpeg", ".png", ".svg"),
+            "Documents": (".doc", ".docx", ".txt", ".pdf", ".xlsx", ".pptx"),
+            "Archives": (".zip", ".gz", ".tar"),
+            "Audio": (".mp3", ".ogg", ".wav", ".amr"),
+            "Video": (".avi", ".mp4", ".mov", ".mkv"),
+            "Other": ()
         }
 
     def get_extension(self) -> dict:
         """Возвращает словарь папок и расширений"""
         return self._DICT_WITH_EXTENSION
 
-    def get_folder_user(self, folder_name: str) -> list:
-        """Возвращает директорию пользователя"""
+    @staticmethod
+    def get_folder_user(folder_name: str) -> list:
+        """Возвращает список файлов в директории пользователя"""
         if os.path.exists(folder_name):
             return os.listdir(folder_name)
         else:
@@ -72,7 +73,8 @@ class FileSorter:
 
         return logs
 
-    def remove_empty_folders(self, folder_user: str) -> None:
+    @staticmethod
+    def remove_empty_folders(folder_user: str) -> None:
         """Удаляет пустые папки в директории пользователя"""
         for root, dirs, files in os.walk(folder_user, topdown=False):
             for dir_name in dirs:

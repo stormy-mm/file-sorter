@@ -1,22 +1,22 @@
 import sys
-from MESSAGES.messages import Messages as Ms
-from DOMENS.file_sorter import FileSorter
+from src.my_app.common.messages import Messages as Ms
+from src.my_app.core.file_sorter import FileSorter
 
 
 def run(path: str):
     """Запуск программы"""
-    FILE_SORT = FileSorter()
+    file_sort = FileSorter()
 
     try:
-        FILE_SORT.get_folder_user(path)
+        file_sort.get_folder_user(path)
     except FileNotFoundError:
         return False, {}
 
-    FILE_SORT.create_folder_in_user(path)
-    logs = FILE_SORT.sort_files(path)
-    FILE_SORT.remove_empty_folders(path)
+    file_sort.create_folder_in_user(path)
+    logs = file_sort.sort_files(path)
+    file_sort.remove_empty_folders(path)
 
-    return FILE_SORT.is_root_folder_clean(path), logs
+    return file_sort.is_root_folder_clean(path), logs
 
 
 def handler(argv):

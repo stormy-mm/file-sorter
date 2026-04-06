@@ -1,9 +1,11 @@
 import sys
-from my_app.common.messages import Messages as Ms
-from my_app.core.file_sorter import FileSorter
+from pathlib import Path
+
+from file_sorter.common.messages import Messages as Ms
+from file_sorter.core.file_sorter import FileSorter
 
 
-def run(path: str):
+def run(path: Path) -> tuple[bool, dict]:
     """Запуск программы"""
     file_sort = FileSorter()
 
@@ -12,9 +14,9 @@ def run(path: str):
     except FileNotFoundError:
         return False, {}
 
-    file_sort.create_folder(path)
+    file_sort.create_folders(path)
     logs = file_sort.sort_files(path)
-    file_sort.remove_empty_folders(path)
+    # file_sort.remove_empty_folders(path)
 
     return file_sort.is_root_folder_clean(path), logs
 

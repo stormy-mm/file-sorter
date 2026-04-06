@@ -1,8 +1,3 @@
-/MESS
-.idea/
-__pychache__
-file_downloader.py### main template
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -219,3 +214,4 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+!/mess/

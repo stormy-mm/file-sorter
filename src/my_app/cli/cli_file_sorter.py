@@ -1,6 +1,6 @@
 import sys
-from src.my_app.common.messages import Messages as Ms
-from src.my_app.core.file_sorter import FileSorter
+from my_app.common.messages import Messages as Ms
+from my_app.core.file_sorter import FileSorter
 
 
 def run(path: str):
@@ -8,11 +8,11 @@ def run(path: str):
     file_sort = FileSorter()
 
     try:
-        file_sort.get_folder_user(path)
+        file_sort.get_folder(path)
     except FileNotFoundError:
         return False, {}
 
-    file_sort.create_folder_in_user(path)
+    file_sort.create_folder(path)
     logs = file_sort.sort_files(path)
     file_sort.remove_empty_folders(path)
 

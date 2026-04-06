@@ -1,5 +1,7 @@
 import os
 
+from my_app.common.exceptions import InvalidPathError
+
 
 def adding_path(*args) -> str | bytes:
     """Возвращает склеенный путь"""
@@ -25,22 +27,23 @@ class FileSorter:
         return self._DICT_WITH_EXTENSION
 
     @staticmethod
-    def get_folder_user(folder_name: str) -> list:
+    def get_folder(folder_name) -> list:
         """Возвращает список файлов в директории пользователя"""
         if os.path.exists(folder_name):
             return os.listdir(folder_name)
-        else:
-            raise FileNotFoundError
+        raise FileNotFoundError
 
-    def create_folder_in_user(self, folder_name: str) -> bool:
+    def create_folder(self, folder_name) -> bool:
         """Создание папки в директории пользователя"""
+        if "." in os.path.split(folder_name)[1]:
+            raise InvalidPathError
         for folder in self.get_extension().keys():
             os.makedirs(adding_path(folder_name, folder), exist_ok=True)
         return True
 
-    def is_root_folder_clean(self, folder_name: str) -> bool:
+    def is_root_folder_clean(self, folder_name) -> bool:
         """Проверяет отсутствие файлов в директории"""
-        for file in self.get_folder_user(folder_name):
+        for file in self.get_folder(folder_name):
             if os.path.isfile(adding_path(folder_name, file)):
                 return False
         return True
@@ -52,10 +55,10 @@ class FileSorter:
                 return folder
         return "Other"
 
-    def sort_files(self, folder_user: str) -> dict:
+    def sort_files(self, folder_user) -> dict:
         """Сортирует файлы"""
         logs = {}
-        for file in self.get_folder_user(folder_user):
+        for file in self.get_folder(folder_user):
             src = adding_path(folder_user, file)
 
             if not os.path.isfile(src):

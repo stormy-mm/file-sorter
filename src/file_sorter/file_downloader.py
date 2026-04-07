@@ -1,18 +1,27 @@
+import shutil
+
 from pathlib import Path
 from file_sorter.common.files_folders import FOLDERS, FILES
 
 
-PATH = Path().cwd() / "../../mess"
+def main():
+    path = Path().cwd() / "../../mess"
 
-PATH.mkdir(exist_ok=True)
+    if path.exists():
+        shutil.rmtree(path)
 
-# Создание файлов
-for file in FILES:
-    with open(PATH / file, "a"):
-        pass
+    path.mkdir(exist_ok=True)
 
-# Создание подпапок
-for folder in FOLDERS:
-    (PATH / folder).mkdir(exist_ok=True, parents=True)
+    # Создание файлов
+    for file in FILES:
+        with open(path / file, "a"):
+            pass
 
-print("Файлы созданы")
+    # Создание подпапок
+    for folder in FOLDERS:
+        (path / folder).mkdir(exist_ok=True, parents=True)
+
+    print("Файлы созданы")
+
+if __name__ == "__main__":
+    main()

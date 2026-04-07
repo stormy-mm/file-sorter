@@ -64,7 +64,7 @@ class FileSorter:
 
     def is_root_folder_clean(self, path: Path) -> bool:
         """Проверяет отсутствие файлов в директории"""
-        return "." not in "".join(map(str, self.get_folder(path)))
+        return all(el.is_dir() for el in self.get_folder(path))
 
     def _get_target_folder(self, extension: str) -> str:
         """Возвращает название папки"""

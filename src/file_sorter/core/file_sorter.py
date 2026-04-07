@@ -9,7 +9,7 @@ class FileSorter:
 
     def __init__(self):
         """Инициализация словаря с названиями директорий и расширениями"""
-        self._DICT_WITH_EXTENSION = {
+        self.dict_with_extension = {
             "Images": (".jpg", ".jpeg", ".png", ".svg"),
             "Documents": (".doc", ".docx", ".txt", ".pdf", ".xlsx", ".pptx"),
             "Archives": (".zip", ".gz", ".tar"),
@@ -18,70 +18,74 @@ class FileSorter:
             "Other": (),
         }
 
-    def get_extension(self) -> dict:
-        """Возвращает словарь папок и расширений"""
-        return self._DICT_WITH_EXTENSION
-
     @staticmethod
     def path_check(path: Path) -> None:
-        """Если будет расширение на конце, то поднимется исключение"""
-        if "." in Path(path).name:
+        """Если файл, то поднимется исключение"""
+        if path.is_file():
             raise InvalidPathError
+
+    @staticmethod
+    def remove_empty_folders(path: Path) -> None:
+        """Удаляет пустые папки в директории пользователя"""
+        for root, dirs, files in path.walk(top_down=False):
+            for dir_name in dirs:
+                try:
+                    (root / dir_name).rmdir()
+                except OSError:
+                    pass
+
+    @staticmethod
+    def _get_unique_path(path: Path) -> Path:
+        """Проверяет уникальность названия файла"""
+        if not path.exists():
+            return path
+
+        stem = path.stem
+        suffix = path.suffix
+        parent = path.parent
+
+        i = 1
+        while True:
+            new_path = parent / f"{stem}({i}){suffix}"
+            if not new_path.exists():
+                return new_path
+            i += 1
 
     def get_folder(self, path: Path) -> Iterator[Path]:
         """Возвращает список файлов в директории пользователя"""
         self.path_check(path)
-        return Path(path).iterdir()
+        return path.iterdir()
 
     def create_folders(self, path: Path) -> None:
         """Создание папки в директории пользователя"""
         self.path_check(path)
-        for folder in self.get_extension().keys():
-            Path(path / folder).mkdir(exist_ok=True, parents=True)
+        for folder in self.dict_with_extension.keys():
+            (path / folder).mkdir(exist_ok=True, parents=True)
 
     def is_root_folder_clean(self, path: Path) -> bool:
         """Проверяет отсутствие файлов в директории"""
-        for file in self.get_folder(path):
-            if (Path(path) / file).is_file():
-                return False
-        return True
+        return "." not in "".join(map(str, self.get_folder(path)))
 
     def _get_target_folder(self, extension: str) -> str:
         """Возвращает название папки"""
-        for folder, extensions in self.get_extension().items():
+        for folder, extensions in self.dict_with_extension.items():
             if extension in extensions:
-                return folder + ""
+                return folder
         return "Other"
 
-    def sort_files(self, path: Path) -> dict:
+    def sort_files(self, path: Path) -> dict[str, Path]:
         """Сортирует файлы"""
         logs = {}
         for file in self.get_folder(path):
             src = path / file
 
-            if Path(src).is_dir():
+            if src.is_dir():
                 continue
 
-            target_folder = self._get_target_folder(Path(src).suffix)
-            dst = path / target_folder / file.name
+            target_folder = self._get_target_folder(file.suffix)
+            dst = self._get_unique_path(path / target_folder / file.name)
 
-            try:
-                Path(src).rename(dst)
-                logs[file] = Path(dst).name
-            except FileExistsError:
-                pass
+            src.rename(dst)
+            logs[file] = dst.name
 
         return logs
-
-    # @staticmethod
-    # def remove_empty_folders(path: Path) -> None:
-    #     """Удаляет пустые папки в директории пользователя"""
-    #     for root, dirs, files in os.walk(path, topdown=False):
-    #         for dir_name in dirs:
-    #             full_path = os.path.join(root, dir_name)
-    #
-    #             try:
-    #                 if not os.listdir(full_path):
-    #                     os.rmdir(full_path)
-    #             except FileNotFoundError:
-    #                 pass

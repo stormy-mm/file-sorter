@@ -86,6 +86,6 @@ class FileSorter:
             dst = self._get_unique_path(path / target_folder / file.name)
 
             src.rename(dst)
-            logs[file] = dst.name
+            logs[file] = dst.parent
 
         return logs

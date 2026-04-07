@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Iterator
 
-from file_sorter.common.exceptions import InvalidPathError
+from ..common.exceptions import InvalidPathError
 
 
 class FileSorter:
@@ -46,7 +46,7 @@ class FileSorter:
 
         i = 1
         while True:
-            new_path = parent / f"{stem}({i}){suffix}"
+            new_path = parent / f"{stem} ({i}){suffix}"
             if not new_path.exists():
                 return new_path
             i += 1

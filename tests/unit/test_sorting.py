@@ -93,4 +93,4 @@ class TestFileSorter:
         """Тест: если после сортировки создать файл с таким же названием в корневой папке и сортировать, то новому файлу
         прибавляется номер"""
         self.fs.sort_files(self.path) # повторная сортировка
-        assert (self.path / r"Documents\notes(1).txt").exists()
+        assert (self.path / r"Documents\notes (1).txt").exists()

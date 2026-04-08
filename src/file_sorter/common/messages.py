@@ -5,7 +5,7 @@ EXAMPLE_PATH = (
     )
 
 class Messages:
-    LOG_ERROR = (f"Ошибка: недостаточно аргументов\nПример ввода: python -m file_sorter {EXAMPLE_PATH}\n"
+    LOG_ERROR = (f"Ошибка: некорректное количество аргументов\nПример ввода: python -m file_sorter {EXAMPLE_PATH}\n"
                  f"Для получения справки: python -m file_sorter -h")
     SUCCESSFUL_SORTING = "\nСортировка прошла успешно!\n"
     UNFOUND_PATH = "Ошибка: Системе не удается найти указанный путь: {}\n"

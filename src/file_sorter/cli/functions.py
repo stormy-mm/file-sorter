@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 from ..core.file_sorter import FileSorter
-from ..common.files_folders import FOLDERS, FILES
+from ..common.files_folders import FILES, FOLDERS
 
 
 def load() -> Path:
@@ -19,29 +19,22 @@ def load() -> Path:
 
     path.mkdir(exist_ok=True)
 
-    # Создание файлов
     for file in FILES:
-        with open(path / file, "a"):
-            pass
+        (path / file).touch()
 
-    # Создание подпапок
     for folder in FOLDERS:
-        (path / folder).mkdir(exist_ok=True, parents=True)
+        (path / folder).parent.mkdir(exist_ok=True, parents=True)
+        (path / folder).touch()
 
     return path
 
 
-def run(path_: str) -> tuple[bool, dict]:
+def run(path: str) -> tuple[bool, dict]:
     """Запуск программы"""
-    path = Path(path_)
-    fs = FileSorter()
+    fs = FileSorter(Path(path))
 
-    # если такого пути не существует, то поднимется исключение
-    fs.get_folder(path)
-    fs.create_folders(path)
-    logs = fs.sort_files(path)
-    fs.remove_empty_folders(path)
+    fs.create_folders()
+    logs = fs.sort_files()
+    fs.remove_empty_folders()
 
-    return fs.is_root_folder_clean(path), logs
-
-
+    return fs.is_root_folder_clean(), logs

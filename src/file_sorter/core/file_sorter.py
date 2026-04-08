@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Iterator
 
 from ..common.exceptions import InvalidPathError
 
@@ -7,7 +6,7 @@ from ..common.exceptions import InvalidPathError
 class FileSorter:
     """Класс для управления сортировщиком файлов"""
 
-    def __init__(self):
+    def __init__(self, path: Path):
         """Инициализация словаря с названиями директорий и расширениями"""
         self.dict_with_extension = {
             "Images": (".jpg", ".jpeg", ".png", ".svg"),
@@ -17,22 +16,17 @@ class FileSorter:
             "Video": (".avi", ".mp4", ".mov", ".mkv"),
             "Other": (),
         }
+        if self.path_check(path):
+            self.path = path
 
     @staticmethod
-    def path_check(path: Path) -> None:
-        """Если файл, то поднимется исключение"""
+    def path_check(path: Path) -> bool:
+        """Если файл или существует, то поднимется исключение"""
         if path.is_file():
             raise InvalidPathError
-
-    @staticmethod
-    def remove_empty_folders(path: Path) -> None:
-        """Удаляет пустые папки в директории пользователя"""
-        for root, dirs, files in path.walk(top_down=False):
-            for dir_name in dirs:
-                try:
-                    (root / dir_name).rmdir()
-                except OSError:
-                    pass
+        if not path.exists():
+            raise FileNotFoundError
+        return True
 
     @staticmethod
     def _get_unique_path(path: Path) -> Path:
@@ -51,20 +45,18 @@ class FileSorter:
                 return new_path
             i += 1
 
-    def get_folder(self, path: Path) -> Iterator[Path]:
-        """Возвращает список файлов в директории пользователя"""
-        self.path_check(path)
-        return path.iterdir()
+    def get_folder(self) -> list[Path]:
+        """Возвращает итератор файлов в директории пользователя"""
+        return list(self.path.rglob('*'))
 
-    def create_folders(self, path: Path) -> None:
+    def create_folders(self) -> None:
         """Создание папки в директории пользователя"""
-        self.path_check(path)
         for folder in self.dict_with_extension.keys():
-            (path / folder).mkdir(exist_ok=True, parents=True)
+            (self.path / folder).mkdir(exist_ok=True)
 
-    def is_root_folder_clean(self, path: Path) -> bool:
+    def is_root_folder_clean(self) -> bool:
         """Проверяет отсутствие файлов в директории"""
-        return all(el.is_dir() for el in self.get_folder(path))
+        return all(el.is_dir() for el in self.path.iterdir())
 
     def _get_target_folder(self, extension: str) -> str:
         """Возвращает название папки"""
@@ -73,19 +65,26 @@ class FileSorter:
                 return folder
         return "Other"
 
-    def sort_files(self, path: Path) -> dict[str, Path]:
+    def sort_files(self) -> dict[str, Path]:
         """Сортирует файлы"""
         logs = {}
-        for file in self.get_folder(path):
-            src = path / file
-
-            if src.is_dir():
+        for file in self.get_folder():
+            if file.is_dir() or file.parent.name in self.dict_with_extension:
                 continue
 
             target_folder = self._get_target_folder(file.suffix)
-            dst = self._get_unique_path(path / target_folder / file.name)
+            dst = self._get_unique_path(self.path / target_folder / file.name)
 
-            src.rename(dst)
+            file.move(dst)
             logs[file] = dst.parent
 
         return logs
+
+    def remove_empty_folders(self) -> None:
+        """Удаляет пустые папки в директории пользователя"""
+        for root, dirs, files in self.path.walk(top_down=False):
+            for dir_name in dirs:
+                try:
+                    (root / dir_name).rmdir()
+                except OSError:
+                    pass

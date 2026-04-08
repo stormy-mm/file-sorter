@@ -1,5 +1,6 @@
 import sys
 
+from ..common.exceptions import InvalidPathError
 from ..common.messages import Messages as Ms
 from .functions import run, load
 
@@ -25,6 +26,8 @@ def handler(argv):
         success, logs = run(argv[1])
     except FileNotFoundError:
         st_and_message(Ms.UNFOUND_PATH.format(argv[1]), 1)
+    except InvalidPathError:
+        st_and_message(Ms.INVALID_PATH, 1)
 
     if not success:
         st_and_message(Ms.ERROR)

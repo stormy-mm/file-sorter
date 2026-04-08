@@ -18,3 +18,4 @@ class Messages:
             "python -m file_sorter -l\n"
             "python -m file_sorter --load")
     ERROR = "Произошла ошибка: некоторые файлы остались в указанной директории"
+    INVALID_PATH = "Ошибка: вы указали путь к файлу. Введите путь к папке"

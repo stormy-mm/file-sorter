@@ -4,10 +4,14 @@
 
 Для начала работы:
 ### 1) скачивание проекта в tags
+```bash
+git clone https://github.com/stormy-mm/file-sorter.git
+cd file-sorter
+```
 ### 2) Создание виртуального окружения: 
 ```bash
-git clone <URL_репозитория>
-cd TaskFlow
+python -m venv .venv
+source .venv/bin/activate
 ```
 ### 3) Установка зависимостей
 ```bash
